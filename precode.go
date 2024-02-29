@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -51,8 +52,8 @@ func main() {
 
 	// генерируем числа, считая параллельно их количество и сумму
 	go Generator(ctx, chIn, func(i int64) {
-		inputSum += i
-		inputCount++
+		atomic.AddInt64(&inputSum, i)
+		atomic.AddInt64(&inputCount, 1)
 	})
 
 	const NumOut = 5 // количество обрабатывающих горутин и каналов
@@ -92,7 +93,7 @@ func main() {
 	var count int64 // количество чисел результирующего канала
 	var sum int64   // сумма чисел результирующего канала
 
-	// 5. Читаем числа из результирующего канала
+	// 5. Читаем числа из результирующего каналаgj
 
 	for val := range chOut {
 		count++
